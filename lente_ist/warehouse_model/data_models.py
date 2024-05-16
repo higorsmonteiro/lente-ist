@@ -12,7 +12,6 @@ from sqlalchemy import DateTime, Integer, Numeric, String, Float, Sequence, Fore
 from sqlalchemy.exc import InternalError, IntegrityError
 
 # ---------- datasus models ----------
-
 class SinanPessoa:
     def __init__(self, metadata):
         self.metadata = metadata
@@ -66,7 +65,6 @@ class SinanPessoa:
         return table_elem, mapping_elem
     
 # ---------- MATCHING DATA MODELS ----------
-
 class SinanLabel:
     def __init__(self, metadata):
         self.metadata = metadata
