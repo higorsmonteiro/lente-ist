@@ -33,12 +33,13 @@ class SinanPessoa:
             Column("MUNICIPIO_RESIDENCIA", String, nullable=True),
             Column("CEP", String, nullable=True),
             Column("CNS", String, nullable=True),
+            Column("FONTE", String, nullable=False),
             Column("CRIADO_EM", DateTime, default=dt.datetime.now),
             Column("ATUALIZADO_EM", DateTime, default=dt.datetime.now, onupdate=dt.datetime.now),
         )
 
         # -- define data mapping (could be import if too big)
-        # -- 'ID_SINAN' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+?
+        # -- 'ID_SINAN' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
         self.mapping = {
             "ID_SINAN" : "ID_SINAN", 
             "DT_NOTIFIC": "DATA_NOTIFICACAO",
@@ -52,7 +53,8 @@ class SinanPessoa:
             "NM_LOGRADO": "LOGRADOURO",
             "NU_NUMERO": "LOGRADOURO_NUMERO", 
             "NU_CEP": "CEP", 
-            "ID_CNS_SUS": "CNS", 
+            "ID_CNS_SUS": "CNS",
+            "FONTE": "FONTE",
         }
 
     def define(self):

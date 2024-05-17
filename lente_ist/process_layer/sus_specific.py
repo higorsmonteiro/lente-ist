@@ -6,7 +6,7 @@ from lente_ist.process_layer import ProcessBase
 class ProcessSinan(ProcessBase):
     db_type = "SINAN"
 
-    def specific_standardize(self, field_id="ID_GEO"):
+    def specific_standardize(self, field_id="ID_SINAN"):
         sexo_arr = self._raw_data.set_index(field_id)["SEXO"].apply(lambda x: x.upper().strip() if pd.notna(x) else np.nan)
         #cpf_arr = self._raw_data.set_index(field_id)["CPF"].apply(lambda x: f"{x:11.0f}".replace(" ", "0") if not isinstance(x, str) and pd.notna(x) else x)
         cns_arr = self._raw_data.set_index(field_id)["CNS"].apply(lambda x: x if isinstance(x, str) and utils.cns_is_valid(x) and pd.notna(x) else ( f"{x:13.0f}".replace(" ", "0") if not isinstance(x, str) and pd.notna(x) else np.nan))

@@ -58,7 +58,7 @@ class WarehouseIST:
                 data source and the schema used in the data models. 
     '''
     def __init__(self, engine_url):
-        self._engine = create_engine(engine_url)
+        self._engine = create_engine(engine_url, future=True)
         self._metadata = MetaData()
         self._tables = {}
         self._mappings = {}

@@ -8,6 +8,8 @@
 
 import pandas as pd
 from unidecode import unidecode
+import tkinter as tk
+from tkinter import filedialog
 
 def uniformize_name(string, sep=''):
     '''
@@ -60,3 +62,14 @@ def cns_is_valid(cns):
     return sum(
         [int(cns[i]) * (15 - i) for i in range(15)]
     ) % 11 == 0
+
+
+def select_folder(msg="Select a Folder"):
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+    folder_path = filedialog.askdirectory(
+        initialdir="/",  # Set the initial directory
+        title=msg,  # Set the dialog title
+        mustexist=True  # Only allow selection of existing folders
+    )
+    return folder_path
