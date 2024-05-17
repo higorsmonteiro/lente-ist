@@ -78,8 +78,13 @@ for current_file in expected_files:
             # -- remove from the dbf the records already present in the database
             data_df = data_df[~data_df["ID_SINAN"].isin(list_of_ids)].copy()
 
-        print(f"{data_df.shape[0]} new records to be added to the database ... ", end='')
         # -- insert records to a given table
+        print(f"{data_df.shape[0]} new records to be added to the database ... ", end='')
         warehouse.insert('sinan_pessoa', data_df, batchsize=200, verbose=False)
+        if source_name=="AIDSANET":
+            warehouse.insert('sinan_aids_adulto_info', data_df, batchsize=200, verbose=False)
+        elif source_name=="AIDSCNET":
+            warehouse.insert('sinan_aids_crianca_info', data_df, batchsize=200, verbose=False)
+        print("done.")
         # -- we could create different tables for different types of data - for instance: aidsanet
         #warehouse.insert('sinan_info_adulto', data_df(tem que ser aidsanet), batchsize=200, verbose=False)

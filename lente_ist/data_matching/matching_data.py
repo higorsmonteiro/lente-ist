@@ -5,8 +5,8 @@ import pandas as pd
 import recordlinkage
 from recordlinkage.index import SortedNeighbourhood
 
-from epimonitor.data_matching import MatchingBase
-import epimonitor.data_matching.utils as utils
+from lente_ist.data_matching import MatchingBase
+import lente_ist.data_matching.utils as utils
 
 class Deduple(MatchingBase):
 

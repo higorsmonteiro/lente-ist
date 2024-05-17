@@ -24,7 +24,7 @@ from sqlalchemy.exc import InternalError, IntegrityError
 
 # -- import the data models
 # ---- sivep-gripe
-from lente_ist.warehouse_model.data_models import SinanPessoa, SinanLabel#, SivepGripePessoa, SivepGripeInfo, SivepGripeLabel
+from lente_ist.warehouse_model.data_models import SinanPessoa, SinanAidsAdultoInfo, SinanAidsCriancaInfo, SinanLabel
 
 # -- utility class
 class smart_dict(dict):
@@ -64,7 +64,9 @@ class WarehouseIST:
         self._mappings = {}
 
         # -- include the data models
-        self._imported_data_models = [ SinanPessoa(self._metadata).define(),  
+        self._imported_data_models = [ SinanPessoa(self._metadata).define(),
+                                       SinanAidsAdultoInfo(self._metadata).define(),
+                                       SinanAidsCriancaInfo(self._metadata).define(),  
                                        SinanLabel(self._metadata).define() ]
 
         for elem in self._imported_data_models:
