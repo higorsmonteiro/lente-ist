@@ -12,16 +12,16 @@ from sqlalchemy import DateTime, Integer, Numeric, String, Float, Sequence, Fore
 from sqlalchemy.exc import InternalError, IntegrityError
 
 # ---------- datasus models ----------
-class SinanPessoa:
+class Pessoa:
     def __init__(self, metadata):
         self.metadata = metadata
-        self.table_name = 'sinan_pessoa'
+        self.table_name = 'pessoa'
 
         # -- define schema for table.
         self.model = Table(
             self.table_name, self.metadata,
-            Column("ID_SINAN", String, primary_key=True),
-            Column("DATA_NOTIFICACAO", DateTime, nullable=False),
+            Column("ID", String, primary_key=True),
+            Column("DATA_NOTIFICACAO", DateTime, nullable=True),
             Column("DATA_DIAGNOSTICO", DateTime, nullable=True),
             Column("NOME_PACIENTE", String, nullable=True),
             Column("DATA_NASCIMENTO", DateTime, nullable=True),
@@ -39,9 +39,9 @@ class SinanPessoa:
         )
 
         # -- define data mapping (could be import if too big)
-        # -- 'ID_SINAN' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
+        # -- 'ID' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
         self.mapping = {
-            "ID_SINAN" : "ID_SINAN", 
+            "ID" : "ID", 
             "DT_NOTIFIC": "DATA_NOTIFICACAO",
             "DT_DIAG": "DATA_DIAGNOSTICO",
             "NM_PACIENT": "NOME_PACIENTE", 
@@ -71,7 +71,7 @@ class SinanAidsAdultoInfo:
     def __init__(self, metadata):
         self.metadata = metadata
         self.table_name = 'sinan_aids_adulto_info'
-        self._dummy_ = ['ID_SINAN','ID_OCUPA_N', 'ANT_TRASMI', 'ANTRELSE_N', 'ANT_DROGA',
+        self._dummy_ = ['ID','ID_OCUPA_N', 'ANT_TRASMI', 'ANTRELSE_N', 'ANT_DROGA',
                         'ANT_HEMOLF', 'ANTTRANS_M', 'ANT_ACIDEN', 'ANTDTTRANS', 'ANTUFTRANS',
                         'ANTMUNTRAN', 'ANT_INSTTR', 'ANT_INVEST', 'LAB_TRIAGE', 'DTTRIAGEM1',
                         'LAB_CONFIR', 'DT_CONFIRM', 'TPRAPIDO1', 'TPRAPIDO2', 'TPRAPIDO3',
@@ -87,7 +87,7 @@ class SinanAidsAdultoInfo:
         # -- define schema for table.
         self.model = Table(
             self.table_name, self.metadata,
-            Column("ID_SINAN", String, ForeignKey('sinan_pessoa.ID_SINAN')),
+            Column("ID", String, ForeignKey('pessoa.ID')),
             Column('ID_OCUPA_N', String, nullable=True),
             Column('ANT_TRASMI', String, nullable=True),
             Column('ANTRELSE_N', String, nullable=True),
@@ -153,7 +153,7 @@ class SinanAidsAdultoInfo:
         )
 
         # -- define data mapping (could be import if too big)
-        # -- 'ID_SINAN' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
+        # -- 'ID' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
         self.mapping = { n:n for n in self._dummy_ }
 
     def define(self):
@@ -191,7 +191,7 @@ class SinanAidsCriancaInfo:
         # -- define schema for table.
         self.model = Table(
             self.table_name, self.metadata,
-            Column("ID_SINAN", String, ForeignKey('sinan_pessoa.ID_SINAN')),
+            Column("ID", String, ForeignKey('pessoa.ID')),
             Column('IDADE_MAE', String, nullable=True),
             Column('ESC_MAE', String, nullable=True),
             Column('RACA_MAE', String, nullable=True),
@@ -284,7 +284,48 @@ class SinanAidsCriancaInfo:
         )
 
         # -- define data mapping (could be import if too big)
-        # -- 'ID_SINAN' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
+        # -- 'ID' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
+        self.mapping = { n:n for n in self._dummy_ }
+
+    def define(self):
+        '''
+            Return dictionary elements containing the data model and 
+            the data mapping, respectively.
+        '''
+        table_elem = { self.table_name : self.model }
+        mapping_elem = { self.table_name : self.mapping }
+        return table_elem, mapping_elem
+
+class SiclomInfo:
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self.table_name = 'siclom_info'
+        self._dummy_ = ["ID", "UDM", "CODIGO_IBGE_NASC", "RACA", "CPF", "ESTADO_CIVIL", "ESCOLARIDADE", 
+                        "CD4_INICIO_TARV", "CV_INICIO_TARV", "ANO_INICIO_TARV",
+                        "DT_CADASTRO", "DT_DIGITACAO", "DT_ULT_ATU", "ST_PACIENTE"]
+
+        # -- define schema for table.
+        self.model = Table(
+            self.table_name, self.metadata,
+            Column("ID", String, ForeignKey('pessoa.ID')),
+            Column('UDM', String, nullable=True),
+            Column('CODIGO_IBGE_NASC', String, nullable=True),
+            Column('RACA', String, nullable=True),
+            Column('CPF', String, nullable=True),
+            Column('ESTADO_CIVIL', String, nullable=True),
+            Column('ESCOLARIDADE', String, nullable=True),
+            Column('CD4_INICIO_TARV', String, nullable=True),
+            Column('CV_INICIO_TARV', String, nullable=True),
+            Column('ANO_INICIO_TARV', String, nullable=True),
+            Column('DT_CADASTRO', DateTime, nullable=True),
+            Column('DT_DIGITACAO', DateTime, nullable=True),
+            Column('DT_ULT_ATU', DateTime, nullable=True),
+            Column('ST_PACIENTE', String, nullable=True),
+            Column("CRIADO_EM", DateTime, default=dt.datetime.now),
+            Column("ATUALIZADO_EM", DateTime, default=dt.datetime.now, onupdate=dt.datetime.now),
+        )
+
+        # -- define data mapping (could be import if too big)
         self.mapping = { n:n for n in self._dummy_ }
 
     def define(self):
@@ -298,17 +339,17 @@ class SinanAidsCriancaInfo:
 
     
 # ---------- MATCHING DATA MODELS ----------
-class SinanLabel:
+class PairsLabel:
     def __init__(self, metadata):
         self.metadata = metadata
-        self.table_name = 'sinan_label'
+        self.table_name = 'pairs_label'
 
         # --> define schema for table.
         self.model = Table(
             self.table_name, self.metadata,
             Column("FMT_ID", String, primary_key=True),
-            Column("ID_SINAN_1", String, nullable=False),
-            Column("ID_SINAN_2", String, nullable=False),
+            Column("ID_1", String, nullable=False),
+            Column("ID_2", String, nullable=False),
             Column("PROB_NEGAT_MODEL_1", Float(5), nullable=True),
             Column("PROB_NEGAT_MODEL_2", Float(5), nullable=True),
             Column("PROB_NEGAT_MODEL_3", Float(5), nullable=True),
@@ -317,7 +358,7 @@ class SinanLabel:
 
         # -- define data mapping (could be imported if too big) - include all columns!
         self.mapping = {
-            "ID_SINAN_1" : "ID_SINAN_1",  "ID_SINAN_2" : "ID_SINAN_2", 
+            "ID_1" : "ID_1",  "ID_2" : "ID_2", 
             "FMT_PKEY": "FMT_ID",
             "PROB_NEGAT_MODEL_1" : "PROB_NEGAT_MODEL_1",
             "PROB_NEGAT_MODEL_2": "PROB_NEGAT_MODEL_2",

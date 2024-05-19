@@ -1,1 +1,2 @@
 from .warehouse_model.warehouse_model import WarehouseIST
+from .warehouse_model.warehouse_injector import InjectorIST
