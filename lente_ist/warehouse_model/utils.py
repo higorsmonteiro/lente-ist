@@ -18,6 +18,7 @@ def process_sinan(df, source_name="SICLOM"):
     notific_fmt = df["DT_NOTIFIC"].apply(lambda x: f"{x.day:2.0f}{x.month:2.0f}{x.year}".replace(" ", "0"))
     id_municip_fmt = df["ID_MUNICIP"].apply(lambda x: f"{x}")
     df["ID"] = df["ID_AGRAVO"]+df["NU_NOTIFIC"]+id_municip_fmt+notific_fmt
+    df["CPF"] = [ np.nan for n in range(df.shape[0]) ]
     df["FONTE"] = [ source_name for n in range(df.shape[0]) ]
     return df
 
@@ -39,11 +40,11 @@ def process_siclom(df, source_name="SICLOM"):
     df["NU_NUMERO"] = [ np.nan for n in range(df.shape[0]) ]
     df["ID_CNS_SUS"] = [ np.nan for n in range(df.shape[0]) ]
     df["FONTE"] = [ source_name for n in range(df.shape[0]) ]
+    df["CPF"] = df["cpf"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)
 
     df["UDM"] = df["UDM"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)
     df["CODIGO_IBGE_NASC"] = df["codigo_ibge_nasc"].apply(lambda x: unidecode(x) if pd.notna(x) else np.nan)
     df["RACA"] = df["raca"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)
-    df["CPF"] = df["cpf"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)
     df["ESTADO_CIVIL"] = df["estado_civil"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)
     df["ESCOLARIDADE"] = df["escolaridade"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)
     df["CD4_INICIO_TARV"] = df["cd4_inicio_TARV"].apply(lambda x: unidecode(x.upper()) if pd.notna(x) else np.nan)

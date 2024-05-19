@@ -16,7 +16,8 @@ setup(
         "tkinter",
         "recordlinkage",
         "re",
-        "ujson"
+        "ujson",
+        "joblib"
     ],
     author="Higor S. Monteiro",
     author_email="higormonteiros@gmail.com",

@@ -33,6 +33,7 @@ class Pessoa:
             Column("MUNICIPIO_RESIDENCIA", String, nullable=True),
             Column("CEP", String, nullable=True),
             Column("CNS", String, nullable=True),
+            Column("CPF", String, nullable=True),
             Column("FONTE", String, nullable=False),
             Column("CRIADO_EM", DateTime, default=dt.datetime.now),
             Column("ATUALIZADO_EM", DateTime, default=dt.datetime.now, onupdate=dt.datetime.now),
@@ -54,6 +55,7 @@ class Pessoa:
             "NU_NUMERO": "LOGRADOURO_NUMERO", 
             "NU_CEP": "CEP", 
             "ID_CNS_SUS": "CNS",
+            "CPF": "CPF",
             "FONTE": "FONTE",
         }
 
@@ -300,7 +302,7 @@ class SiclomInfo:
     def __init__(self, metadata):
         self.metadata = metadata
         self.table_name = 'siclom_info'
-        self._dummy_ = ["ID", "UDM", "CODIGO_IBGE_NASC", "RACA", "CPF", "ESTADO_CIVIL", "ESCOLARIDADE", 
+        self._dummy_ = ["ID", "UDM", "CODIGO_IBGE_NASC", "RACA", "ESTADO_CIVIL", "ESCOLARIDADE", 
                         "CD4_INICIO_TARV", "CV_INICIO_TARV", "ANO_INICIO_TARV",
                         "DT_CADASTRO", "DT_DIGITACAO", "DT_ULT_ATU", "ST_PACIENTE"]
 
@@ -311,7 +313,6 @@ class SiclomInfo:
             Column('UDM', String, nullable=True),
             Column('CODIGO_IBGE_NASC', String, nullable=True),
             Column('RACA', String, nullable=True),
-            Column('CPF', String, nullable=True),
             Column('ESTADO_CIVIL', String, nullable=True),
             Column('ESCOLARIDADE', String, nullable=True),
             Column('CD4_INICIO_TARV', String, nullable=True),
@@ -350,19 +351,19 @@ class PairsLabel:
             Column("FMT_ID", String, primary_key=True),
             Column("ID_1", String, nullable=False),
             Column("ID_2", String, nullable=False),
-            Column("PROB_NEGAT_MODEL_1", Float(5), nullable=True),
-            Column("PROB_NEGAT_MODEL_2", Float(5), nullable=True),
-            Column("PROB_NEGAT_MODEL_3", Float(5), nullable=True),
+            Column("PROBA_NEGATIVO_MODELO_1", Float(5), nullable=True),
+            Column("PROBA_NEGATIVO_MODELO_2", Float(5), nullable=True),
+            Column("PROBA_NEGATIVO_MODELO_3", Float(5), nullable=True),
             Column("CRIADO_EM", DateTime, default=dt.datetime.now),
         )
 
         # -- define data mapping (could be imported if too big) - include all columns!
         self.mapping = {
             "ID_1" : "ID_1",  "ID_2" : "ID_2", 
-            "FMT_PKEY": "FMT_ID",
-            "PROB_NEGAT_MODEL_1" : "PROB_NEGAT_MODEL_1",
-            "PROB_NEGAT_MODEL_2": "PROB_NEGAT_MODEL_2",
-            "PROB_NEGAT_MODEL_3": "PROB_NEGAT_MODEL_3",  
+            "FMT_ID": "FMT_ID",
+            "PROBA_NEGATIVO_MODELO_1" : "PROBA_NEGATIVO_MODELO_1",
+            "PROBA_NEGATIVO_MODELO_2": "PROBA_NEGATIVO_MODELO_2",
+            "PROBA_NEGATIVO_MODELO_3": "PROBA_NEGATIVO_MODELO_3",  
         }
 
     def define(self):
