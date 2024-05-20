@@ -4,7 +4,9 @@
 import joblib
 from pathlib import Path
 import pandas as pd
+import numpy as np
 import datetime as dt
+from tqdm import tqdm
 from lente_ist import WarehouseIST
 from lente_ist.process_layer.sus_specific import ProcessSinan
 from lente_ist.data_matching.matching_data import Deduple
@@ -22,6 +24,7 @@ class DedupleAgent:
         self.warehouse = WarehouseIST(self.engine_url)
         self.engine = self.warehouse.db_init()
         self.current_pairs = []
+        self.deduple = None
 
         self.models = {
             "GBT": joblib.load(Path(path_to_models).joinpath("GRADBOOST_SIVEP04SET2023.joblib")),
@@ -56,7 +59,7 @@ class DedupleAgent:
         processed_data = processor.data
 
         # -- build the similarity matrix
-        deduple = Deduple(processed_data, left_id=self.field_id, env_folder=None)
+        self.deduple = Deduple(processed_data, left_id=self.field_id, env_folder=None)
         linkage_vars = [
             ("cpf", "cpf", "exact", 'cpf'),
             ("cns", "cns", "exact", 'cns'),
@@ -71,25 +74,25 @@ class DedupleAgent:
             ("complemento_nome", "complemento_nome", "string", 'complemento_nome'),
             ("complemento_nome_mae", "complemento_nome_mae", "string", 'complemento_nome_mae'),
         ]
-        deduple.set_linkage_variables(linkage_vars, string_method="damerau_levenshtein").define_pairs("FONETICA_N", window=3)
+        self.deduple.set_linkage_variables(linkage_vars, string_method="damerau_levenshtein").define_pairs("FONETICA_N", window=3)
 
         # ---- remove pairs that were already compared previously
-        deduple.candidate_pairs = deduple.candidate_pairs.drop(self.current_pairs, errors='ignore')
-        print(f"Pairs to be effectively compared: {deduple.candidate_pairs.shape[0]}")
+        self.deduple.candidate_pairs = self.deduple.candidate_pairs.drop(self.current_pairs, errors='ignore')
+        print(f"Pairs to be effectively compared: {self.deduple.candidate_pairs.shape[0]}")
         # -- compare and generate the similarity matrix
-        deduple.perform_linkage(threshold=0.60, number_of_blocks=number_of_blocks)
+        self.deduple.perform_linkage(threshold=0.60, number_of_blocks=number_of_blocks)
 
         # -- classify pairs
-        pair_ids, X_sel = deduple.comparison_matrix.reset_index().iloc[:,:2],  deduple.comparison_matrix.reset_index().iloc[:,2:].values
+        pair_ids, X_sel = self.deduple.comparison_matrix.reset_index().iloc[:,:2],  self.deduple.comparison_matrix.reset_index().iloc[:,2:].values
 
         batchsize = 6000
         Y_neg1, Y_neg2, Y_neg3 = [], [], []
         for batch in tqdm(np.array_split(X_sel, np.arange(batchsize, X_sel.shape[0]+1, batchsize))):
-            Y_neg1 += [ res[0] for res in gbt_model.predict_proba(batch) ]
-            Y_neg2 += [ res[0] for res in rnf_model.predict_proba(batch) ]
-            Y_neg3 += [ res[0] for res in lgt_model.predict_proba(batch) ]
+            Y_neg1 += [ res[0] for res in self.models["GBT"].predict_proba(batch) ]
+            Y_neg2 += [ res[0] for res in self.models["RNF"].predict_proba(batch) ]
+            Y_neg3 += [ res[0] for res in self.models["LGT"].predict_proba(batch) ]
 
-        pair_ids["FMT_ID"] = pair_ids[f"{field_id}_1"] + "-" + pair_ids[f"{field_id}_2"]
+        pair_ids["FMT_ID"] = pair_ids[f"{self.field_id}_1"] + "-" + pair_ids[f"{self.field_id}_2"]
         pair_ids["PROBA_NEGATIVO_MODELO_1"] = Y_neg1
         pair_ids["PROBA_NEGATIVO_MODELO_2"] = Y_neg2
         pair_ids["PROBA_NEGATIVO_MODELO_3"] = Y_neg3
