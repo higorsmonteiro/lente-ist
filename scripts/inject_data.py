@@ -12,12 +12,12 @@ from simpledbf import Dbf5
 from lente_ist import WarehouseIST, InjectorIST
 from lente_ist.utils import select_folder
 
-msg1 = "Selecionar Pasta Contendo os Arquivos DBF"
-msg2 = "Selecionar Pasta Para Dados Processados"
-#basefolder = Path(select_folder(msg=msg1))
-basefolder = Path.home().joinpath("Documents", "data", "sinan", "aids", "DBF")
-#warehouse_location = Path(select_folder(msg=msg2))
-warehouse_location = Path.home().joinpath("Documents", "data", "sinan", "aids", "SQL_WAREHOUSE")
+msg1 = "Selecionar Pasta Contendo os Arquivos Para Processamento"
+msg2 = "Selecionar Pasta Para Armazenamento Final"
+basefolder = Path(select_folder(msg=msg1))
+#basefolder = Path.home().joinpath("Documents", "data", "sinan", "aids", "DBF")
+warehouse_location = Path(select_folder(msg=msg2))
+#warehouse_location = Path.home().joinpath("Documents", "data", "sinan", "aids", "SQL_WAREHOUSE")
 warehouse_name = "ist_pessoa.db"
 
 # -- create interface for command line arguments

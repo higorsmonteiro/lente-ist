@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body, html, .dash, .dash-container {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Styles for the tab titles */
+.custom-tab {
+    font-size: 12px;
+    padding: 0 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+}
+
+.custom-tab--selected {
+    font-size: 12px;
+    padding: 0 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    color: #007bff;
+}
+
+.custom-tabs {
+    margin: 5px 0;
+}
+
+/* Reduce the height of the row containing the tabs */
+.tabs-row {
+    height: 50px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Increase side padding for the main container */
+.dash-container {
+    padding-left: 30px;
+    padding-right: 30px;
+}

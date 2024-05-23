@@ -12,9 +12,9 @@ from simpledbf import Dbf5
 from lente_ist import WarehouseIST, DedupleAgent
 from lente_ist.utils import select_folder
 
-msg2 = "Selecionar Pasta Para Dados Processados"
-#warehouse_location = Path(select_folder(msg=msg2))
-warehouse_location = Path.home().joinpath("Documents", "data", "sinan", "aids", "SQL_WAREHOUSE")
+msg2 = "Selecionar Pasta Com Banco de Dados Processado"
+warehouse_location = Path(select_folder(msg=msg2))
+#warehouse_location = Path.home().joinpath("Documents", "data", "sinan", "aids", "SQL_WAREHOUSE")
 path_to_models = Path.cwd().parent.joinpath("lente_ist", "ml_models")
 warehouse_name = "ist_pessoa.db"
 
