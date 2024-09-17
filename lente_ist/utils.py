@@ -10,6 +10,38 @@ import pandas as pd
 from unidecode import unidecode
 import tkinter as tk
 from tkinter import filedialog
+from sqlalchemy import text
+
+def select_folder(msg="Select a Folder"):
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+    folder_path = filedialog.askdirectory(
+        initialdir="/",  # Set the initial directory
+        title=msg,  # Set the dialog title
+        mustexist=True  # Only allow selection of existing folders
+    )
+    return folder_path
+
+def perform_query(query_str, engine, batchsize=1000):
+
+    schema_data = {
+        'rows': [],
+        'columns': [],
+    }
+
+    query_str = text(query_str)
+    with engine.connect() as conn:
+        qres = conn.execute(query_str)
+        schema_data['columns'] = list(qres.keys())
+
+        while True:
+            rows = qres.fetchmany(batchsize)
+            if not rows:
+                break
+            schema_data["rows"] += [ row for row in rows ]
+    
+    res_df = pd.DataFrame(schema_data['rows'], columns=schema_data['columns'])
+    return res_df
 
 def uniformize_name(string, sep=''):
     '''
@@ -64,12 +96,3 @@ def cns_is_valid(cns):
     ) % 11 == 0
 
 
-def select_folder(msg="Select a Folder"):
-    root = tk.Tk()
-    root.withdraw()  # Hide the root window
-    folder_path = filedialog.askdirectory(
-        initialdir="/",  # Set the initial directory
-        title=msg,  # Set the dialog title
-        mustexist=True  # Only allow selection of existing folders
-    )
-    return folder_path

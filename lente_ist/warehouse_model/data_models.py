@@ -408,28 +408,92 @@ class SiclomInfo:
         mapping_elem = { self.table_name : self.mapping }
         return table_elem, mapping_elem
 
-    
-# ---------- MATCHING DATA MODELS ----------
-class PairsLabel:
+class SimInfo:
     def __init__(self, metadata):
         self.metadata = metadata
-        self.table_name = 'pairs_label'
+        self.table_name = 'sim_info'
+        self._dummy_ = ['ID', 'DTOBITO', "CAUSABAS", "LINHAA", "LINHAB", "LINHAC", 
+                        "LINHAD", "LINHAII", "CODESTAB"]
+
+        # -- define schema for table.
+        self.model = Table(
+            self.table_name, self.metadata,
+            Column("ID", String, ForeignKey('pessoa.ID')),
+            Column("DTOBITO", DateTime, nullable=True),
+            Column("CAUSABAS", String(4), nullable=True),
+            Column("LINHAA", String(20), nullable=True),
+            Column("LINHAB", String(20), nullable=True),
+            Column("LINHAC", String(20), nullable=True),
+            Column("LINHAD", String(20), nullable=True),
+            Column("LINHAII", String(20), nullable=True),
+            Column("CODESTAB", String(8), nullable=True),
+            Column("CRIADO_EM", DateTime, default=dt.datetime.now),
+            Column("ATUALIZADO_EM", DateTime, default=dt.datetime.now, onupdate=dt.datetime.now),
+        )
+
+        # -- define data mapping (could be import if too big)
+        # -- 'ID' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
+        self.mapping = { n:n for n in self._dummy_ }
+
+    def define(self):
+        '''
+            Return dictionary elements containing the data model and 
+            the data mapping, respectively.
+        '''
+        table_elem = { self.table_name : self.model }
+        mapping_elem = { self.table_name : self.mapping }
+        return table_elem, mapping_elem
+
+class SimcInfo:
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self.table_name = 'simc_info'
+        self._dummy_ = ['ID', 'DT_ULTIMA_DESPENSA', "DURACAO", "DT_RETORNO", "DIAS_ATRASO", "INST_SOLICITANTE"]
+
+        # -- define schema for table.
+        self.model = Table(
+            self.table_name, self.metadata,
+            Column("ID", String, ForeignKey('pessoa.ID')),
+            Column("DT_ULTIMA_DESPENSA", DateTime, nullable=True),
+            Column("DURACAO", Numeric(precision=6, scale=1), nullable=True),
+            Column("DT_RETORNO", DateTime, nullable=True),
+            Column("DIAS_ATRASO", Numeric(precision=6, scale=1), nullable=True),
+            Column("INST_SOLICITANTE", String, nullable=True),
+            Column("CRIADO_EM", DateTime, default=dt.datetime.now),
+            Column("ATUALIZADO_EM", DateTime, default=dt.datetime.now, onupdate=dt.datetime.now),
+        )
+
+        # -- define data mapping (could be import if too big)
+        # -- 'ID' is four columns: NU_NOTIFIC+ID_AGRAVO+DT_NOTIFIC+ID_MUNICIPIO
+        self.mapping = { n:n for n in self._dummy_ }
+
+    def define(self):
+        '''
+            Return dictionary elements containing the data model and 
+            the data mapping, respectively.
+        '''
+        table_elem = { self.table_name : self.model }
+        mapping_elem = { self.table_name : self.mapping }
+        return table_elem, mapping_elem
+
+
+# ---------- MATCHING DATA MODELS ----------
+class PositivePairsLabel:
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self.table_name = 'likely_positive_pairs'
 
         # --> define schema for table.
         self.model = Table(
             self.table_name, self.metadata,
             Column("FMT_ID", String, primary_key=True),
-            Column("ID_1", String, nullable=False),
-            Column("ID_2", String, nullable=False),
-            Column("PROBA_NEGATIVO_MODELO_1", Float(5), nullable=True),
-            Column("PROBA_NEGATIVO_MODELO_2", Float(5), nullable=True),
-            Column("PROBA_NEGATIVO_MODELO_3", Float(5), nullable=True),
-            Column("CRIADO_EM", DateTime, default=dt.datetime.now),
+            Column("PROBA_NEGATIVO_MODELO_1", Numeric(precision=5, scale=4), nullable=True),
+            Column("PROBA_NEGATIVO_MODELO_2", Numeric(precision=5, scale=4), nullable=True),
+            Column("PROBA_NEGATIVO_MODELO_3", Numeric(precision=5, scale=4), nullable=True),
         )
 
         # -- define data mapping (could be imported if too big) - include all columns!
         self.mapping = {
-            "ID_1" : "ID_1",  "ID_2" : "ID_2", 
             "FMT_ID": "FMT_ID",
             "PROBA_NEGATIVO_MODELO_1" : "PROBA_NEGATIVO_MODELO_1",
             "PROBA_NEGATIVO_MODELO_2": "PROBA_NEGATIVO_MODELO_2",
@@ -444,3 +508,65 @@ class PairsLabel:
         table_elem = { self.table_name : self.model }
         mapping_elem = { self.table_name : self.mapping }
         return table_elem, mapping_elem
+
+
+class NegativePairsLabel:
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self.table_name = 'likely_negative_pairs'
+
+        # --> define schema for table.
+        self.model = Table(
+            self.table_name, self.metadata,
+            Column("FMT_ID", String, primary_key=True),
+        )
+
+        # -- define data mapping (could be imported if too big) - include all columns!
+        self.mapping = {
+            "FMT_ID": "FMT_ID",
+        }
+
+    def define(self):
+        '''
+            Return dictionary elements containing the data model and 
+            the data mapping, respectively.
+        '''
+        table_elem = { self.table_name : self.model }
+        mapping_elem = { self.table_name : self.mapping }
+        return table_elem, mapping_elem
+    
+# ---------- MATCHING DATA MODELS ----------
+#class PairsLabel:
+#    def __init__(self, metadata):
+#        self.metadata = metadata
+#        self.table_name = 'pairs_label'
+#
+#        # --> define schema for table.
+#        self.model = Table(
+#            self.table_name, self.metadata,
+#            Column("FMT_ID", String, primary_key=True),
+#            Column("ID_1", String, nullable=False),
+#            Column("ID_2", String, nullable=False),
+#            Column("PROBA_NEGATIVO_MODELO_1", Float(5), nullable=True),
+#            Column("PROBA_NEGATIVO_MODELO_2", Float(5), nullable=True),
+#            Column("PROBA_NEGATIVO_MODELO_3", Float(5), nullable=True),
+#            Column("CRIADO_EM", DateTime, default=dt.datetime.now),
+#        )
+#
+#        # -- define data mapping (could be imported if too big) - include all columns!
+#        self.mapping = {
+#            "ID_1" : "ID_1",  "ID_2" : "ID_2", 
+#            "FMT_ID": "FMT_ID",
+#            "PROBA_NEGATIVO_MODELO_1" : "PROBA_NEGATIVO_MODELO_1",
+#            "PROBA_NEGATIVO_MODELO_2": "PROBA_NEGATIVO_MODELO_2",
+#            "PROBA_NEGATIVO_MODELO_3": "PROBA_NEGATIVO_MODELO_3",  
+#        }
+#
+#    def define(self):
+#        '''
+#            Return dictionary elements containing the data model and 
+#            the data mapping, respectively.
+#        '''
+#        table_elem = { self.table_name : self.model }
+#        mapping_elem = { self.table_name : self.mapping }
+#        return table_elem, mapping_elem
