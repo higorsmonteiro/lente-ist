@@ -6,7 +6,10 @@ from lente_ist.process_layer.base import ProcessBase
 class ProcessSinan(ProcessBase):
     db_type = "SINAN"
 
-    def specific_standardize(self):
+    def specific_standardize(self, simplify_fonetica=False):
+        '''
+            simplify_fonetica: if the size of the data allows, simplify fonetica (only first name) to increase number of compared pairs.
+        '''
         sexo_arr = self._raw_data.set_index(self.field_id)["SEXO"].apply(lambda x: x.upper().strip() if pd.notna(x) else np.nan)
         cpf_arr = self._raw_data.set_index(self.field_id)["CPF"].apply(lambda x: f"{x:11.0f}".replace(" ", "0") if not isinstance(x, str) and pd.notna(x) else x)
         cns_arr = self._raw_data.set_index(self.field_id)["CNS"].apply(lambda x: x if isinstance(x, str) and utils.cns_is_valid(x) and pd.notna(x) else ( f"{x:13.0f}".replace(" ", "0") if not isinstance(x, str) and pd.notna(x) else np.nan))
@@ -16,6 +19,9 @@ class ProcessSinan(ProcessBase):
         newcol, colnames = [sexo_arr, cns_arr, cpf_arr, bairro_arr, cep_arr], ["sexo", "cns", "cpf", "bairro", "cep"]
         for index, colname in enumerate(colnames):
             self._data = self._data.merge(newcol[index], left_on=self.field_id, right_index=True, how='left')
+
+        if simplify_fonetica:
+            self._data["FONETICA_N"] = self._data["NOME_PACIENTE"].apply(lambda x: f"{x.split(' ')[0]}" if pd.notna(x) else np.nan)
             
         self._data = self._data.rename({"SEXO": "sexo", "CPF": "cpf", "CNS": "cns", "BAIRRO_RESIDENCIA": "bairro", "CEP": "cep"}, axis=1)
 

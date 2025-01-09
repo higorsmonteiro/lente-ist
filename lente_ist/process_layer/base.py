@@ -42,7 +42,7 @@ class ProcessBase:
     def data(self, x):
         raise Exception("Not possible to change this attribute.")
 
-    def basic_standardize(self):
+    def basic_standardize(self, fonetica_column="NOME_PACIENTE"):
         '''
             Basic standards for matching variables. 
             
@@ -65,7 +65,7 @@ class ProcessBase:
         self._data["nascimento_ano"] = self._data["DATA_NASCIMENTO"].apply(lambda x: x.year if hasattr(x, 'day') and pd.notna(x) else np.nan)
         
         # -- standard blocking variable
-        self._data["FONETICA_N"] = self._data["NOME_PACIENTE"].apply(lambda x: f"{x.split(' ')[0]}{x.split(' ')[-1]}" if pd.notna(x) else np.nan)
+        self._data["FONETICA_N"] = self._data[fonetica_column].apply(lambda x: f"{x.split(' ')[0]}{x.split(' ')[-1]}" if pd.notna(x) else np.nan)
 
         # -- frequency of first names (patient and patient's mother)
         fst_name_freq = self._data["primeiro_nome"].value_counts().reset_index().rename({"index": "primeiro_nome", "count": "count_primeiro_nome"}, axis=1)
