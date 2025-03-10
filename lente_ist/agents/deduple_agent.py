@@ -22,7 +22,7 @@ class DedupleAgent:
         self.field_id = field_id
 
         self.engine_url = f"sqlite:///{self.warehouse_location.joinpath(self.warehouse_name)}"
-        self.warehouse = WarehouseIST(self.engine_url)
+        self.warehouse = WarehouseHIV(self.engine_url)
         self.engine = self.warehouse.db_init()
         self.current_pairs = []
         self.deduple = None
