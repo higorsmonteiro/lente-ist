@@ -6,7 +6,7 @@ from lente_ist.process_layer.base import ProcessBase
 class ProcessSinan(ProcessBase):
     db_type = "SINAN"
 
-    def specific_standardize(self, simplify_fonetica=False):
+    def specific_standardize(self, fonetica_column="NOME_PACIENTE", simplify_fonetica=False):
         '''
             simplify_fonetica: if the size of the data allows, simplify fonetica (only first name) to increase number of compared pairs.
         '''
@@ -21,7 +21,7 @@ class ProcessSinan(ProcessBase):
             self._data = self._data.merge(newcol[index], left_on=self.field_id, right_index=True, how='left')
 
         if simplify_fonetica:
-            self._data["FONETICA_N"] = self._data["NOME_PACIENTE"].apply(lambda x: f"{x.split(' ')[0]}" if pd.notna(x) else np.nan)
+            self._data["FONETICA_N"] = self._data[fonetica_column].apply(lambda x: f"{x.split(' ')[0]}" if pd.notna(x) else np.nan)
             
         self._data = self._data.rename({"SEXO": "sexo", "CPF": "cpf", "CNS": "cns", "BAIRRO_RESIDENCIA": "bairro", "CEP": "cep"}, axis=1)
 
