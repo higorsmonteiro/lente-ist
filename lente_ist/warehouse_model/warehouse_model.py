@@ -12,7 +12,7 @@
 from sqlalchemy import create_engine, MetaData
 # -- import the data models
 from lente_ist.warehouse_model.warehouse_base import WarehouseBase
-from lente_ist.warehouse_model.data_models import Pessoa, SinanAidsAdultoInfo, SinanAidsCriancaInfo, SiclomInfo, SimInfo, SimcInfo 
+from lente_ist.warehouse_model.data_models import Pessoa, SinanAidsAdultoInfo, SinanAidsCriancaInfo, SiclomInfo, SimInfo, SimcInfo, SiscelInfo 
 from lente_ist.warehouse_model.data_models import PositivePairsLabel, NegativePairsLabel
 
 class WarehouseHIV(WarehouseBase):
@@ -28,7 +28,8 @@ class WarehouseHIV(WarehouseBase):
                                        SinanAidsCriancaInfo(self._metadata).define(),
                                        SiclomInfo(self._metadata).define(),
                                        SimInfo(self._metadata).define(),
-                                       SimcInfo(self._metadata).define(),  
+                                       SimcInfo(self._metadata).define(), 
+                                       SiscelInfo(self._metadata).define(),  
                                        PositivePairsLabel(self._metadata).define(),
                                        NegativePairsLabel(self._metadata).define() ]
 

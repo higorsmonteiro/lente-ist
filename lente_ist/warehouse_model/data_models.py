@@ -475,6 +475,46 @@ class SimcInfo:
         table_elem = { self.table_name : self.model }
         mapping_elem = { self.table_name : self.mapping }
         return table_elem, mapping_elem
+    
+class SiscelInfo:
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self.table_name = 'siscel_info'
+        self._dummy_ = ["ID", "DT_COLETA", "NU_SOLICITA", "LOG", "VOLUME", "TIPO", 
+                        "PAC_ASSINTOM", "STATUS_CARGA_VIRAL", "COPIAS",
+                        "CD4", "CD8", "CD3_MEDIA"]
+
+        # -- define schema for table.
+        self.model = Table(
+            self.table_name, self.metadata,
+            Column("ID", String, ForeignKey('pessoa.ID')),
+            Column('DT_COLETA', DateTime, nullable=True),
+            Column('NU_SOLICITA', Integer, nullable=True),
+            Column('LOG', Numeric(precision=4, scale=1), nullable=True),
+            Column('VOLUME', Numeric(precision=6, scale=1), nullable=True),
+            Column('TIPO', String, nullable=True),
+            Column('PAC_ASSINTOM', String, nullable=True),
+            Column('STATUS_CARGA_VIRAL', String, nullable=True),
+            Column('COPIAS', String, nullable=True),
+            Column('CD4', Float, nullable=True),
+            Column('CD4%', Numeric(precision=4, scale=1), nullable=True),
+            Column('CD8', Float, nullable=True),
+            Column('CD8%', Numeric(precision=4, scale=1), nullable=True),
+            Column("CD3_MEDIA", Integer, nullable=True),
+            Column("CRIADO_EM", DateTime, default=dt.datetime.now),
+        )
+
+        # -- define data mapping (could be import if too big)
+        self.mapping = { n:n for n in self._dummy_ }
+
+    def define(self):
+        '''
+            Return dictionary elements containing the data model and 
+            the data mapping, respectively.
+        '''
+        table_elem = { self.table_name : self.model }
+        mapping_elem = { self.table_name : self.mapping }
+        return table_elem, mapping_elem
 
 
 # ---------- MATCHING DATA MODELS ----------

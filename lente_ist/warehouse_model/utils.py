@@ -121,42 +121,6 @@ def process_simc(df, source_name="SIMC"):
     df['INST_SOLICITANTE'] = df['Instituição solicitante'].copy()
     return df
 
-# -- the raw data needs pd.read_excel(filename, header=6)
-# -- better to provide a minimally processed data where 'header=6' is not needed.
-def process_siscel(df, source_name="SISCEL"):
-    '''
-        ...
-    '''
-    # -- create an index hash based on the values of the row
-    df = df.dropna(how='all')
-    cols = [
-       'Instituição solicitante', 'Nome Paciente', 'Nome mãe', 'Data Nascimento', 
-       'Idade', 'Sexo/Gênero', 'Raça/cor', 'Escolaridade', 'CPF'
-    ]
-    row_str = df[cols].apply(lambda x: abs(hash('_'.join([ f'{x[col]}' for col in cols if pd.notna(x[col]) ]))) % (10**12) , axis=1)
-    df["ID"] = row_str.apply(lambda x: f'{x:.0f}')
-    df['NM_PACIENT'] = df['Nome Paciente'].apply(lambda x: unidecode(x.upper()).strip() if pd.notna(x) else np.nan)
-    df['DT_NASC'] = pd.to_datetime(df['Data Nascimento'], errors="coerce")
-    df["NM_MAE_PAC"] = df['Nome mãe'].apply(lambda x: unidecode(x.upper()).strip() if pd.notna(x) else np.nan)
-    df['DT_NOTIFIC'] = [ np.nan for elem in range(df.shape[0]) ]
-    df['DT_DIAG'] = [ np.nan for elem in range(df.shape[0]) ]
-    df["CS_SEXO"] = df['Sexo/Gênero'].apply(lambda x: unidecode(x.upper()).strip() if pd.notna(x) else np.nan).map({'Masculino': 'M', 'Feminino': 'F'})
-    df["NM_BAIRRO"] = [ np.nan for elem in range(df.shape[0]) ]
-    df["ID_MN_RESI"] = df['Município de residência'].copy() # -- needs transformation
-    df["NM_LOGRADO"] = [ np.nan for elem in range(df.shape[0]) ]
-    df["NU_CEP"] = [ np.nan for elem in range(df.shape[0]) ]
-    df["NU_NUMERO"] = [ np.nan for elem in range(df.shape[0]) ]
-    df["ID_CNS_SUS"] = [ np.nan for elem in range(df.shape[0]) ]
-    df["FONTE"] = [ source_name for n in range(df.shape[0]) ]
-    df["CPF"] = df["CPF"].apply(lambda x: unidecode(f'{x:11.0f}'.replace(" ", "0").upper()).strip() if pd.notna(x) else np.nan)
-
-    df['DT_ULTIMA_DESPENSA'] = pd.to_datetime(df['Data últ. dispensa'], errors='coerce')
-    df['DURACAO'] = df['Duração'].copy()
-    df["DT_RETORNO"] = pd.to_datetime(df["Data retorno"], errors='coerce')
-    df["DIAS_ATRASO"] = df['Dias atraso'].copy()
-    df['INST_SOLICITANTE'] = df['Instituição solicitante'].copy()
-    return df
-
 def process_siscel(df, source_name="SISCEL"):
     '''
         ...
@@ -164,9 +128,10 @@ def process_siscel(df, source_name="SISCEL"):
     # -- create an index hash based on the values of the row (needs to choose the 'cols')
     df = df.dropna(how='all')
     cols = [
-       'Instituição solicitante', 'Nome Paciente', 'Nome mãe', 'Data Nascimento', 
-       'Idade', 'Sexo/Gênero', 'Raça/cor', 'Escolaridade', 'CPF'
+       "Nome Civil", 'Data de Nascimento', 'Mãe', 'Código', 'CEP', "Endereço", "Nº da Solicitação"
     ]
+    row_str = df[cols].apply(lambda x: abs(hash('_'.join([ f'{x[col]}' for col in cols if pd.notna(x[col]) ]))) % (10**12) , axis=1)
+    df["ID"] = row_str.apply(lambda x: f'{x:.0f}')
     df["NM_PACIENT"] = df["Nome Civil"].apply(lambda x: unidecode(x.upper()).strip() if pd.notna(x) else np.nan)
     df['DT_NASC'] = pd.to_datetime(df['Data de Nascimento'], errors="coerce")
     df["NM_MAE_PAC"] = df['Mãe'].apply(lambda x: unidecode(x.upper()).strip() if pd.notna(x) else np.nan)
@@ -183,6 +148,21 @@ def process_siscel(df, source_name="SISCEL"):
     df["ID_CNS_SUS"] = [ np.nan for elem in range(df.shape[0]) ]
     df["CPF"] = [ np.nan for elem in range(df.shape[0]) ]
     df["FONTE"] = [ source_name for n in range(df.shape[0]) ]
+
+    df["DT_COLETA"] = pd.to_datetime(df["Data da Coleta"], errors="coerce")
+    df["NU_SOLICITA"] = df["Nº da Solicitação"].copy()
+    df["LOG"] = df["Log"].copy()
+    df["VOLUME"] = df["Volume (ul)"].copy()
+    df["TIPO"] = df["TIPO"].copy()
+    df["PAC_ASSINTOM"] = df["Paciente assintomático?"].copy()
+    df["STATUS_CARGA_VIRAL"] = df["Carga Viral Indetectável?"].copy()
+    df["COPIAS"] = df["Cópias"].copy()
+    df["CD4"] = df["Contagem CD4"].apply(lambda x: int(x) if pd.notna(x) else np.nan).copy()
+    df["CD4%"] = df["% CD4"].copy()
+    df["CD8"] = df["Contagem CD8"].apply(lambda x: int(x) if pd.notna(x) else np.nan).copy()
+    df["CD8%"] = df["% CD8"].copy()
+    df["CD3_MEDIA"] = df["Média CD3"].apply(lambda x: int(x) if pd.notna(x) else np.nan).copy()
+    return df
 
 
 

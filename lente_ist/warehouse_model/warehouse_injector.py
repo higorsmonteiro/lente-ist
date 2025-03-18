@@ -19,7 +19,7 @@ from pathlib import Path
 # -- import the warehouse class
 from lente_ist import WarehouseHIV
 from lente_ist.utils import select_folder
-from lente_ist.warehouse_model.utils import process_siclom, process_sinan, process_sim, process_simc
+from lente_ist.warehouse_model.utils import process_siclom, process_sinan, process_sim, process_simc, process_siscel
 
 class InjectorHIV:
     '''
@@ -49,11 +49,12 @@ class InjectorHIV:
             Path("DO2022.DBF"),
             Path("DO2023.DBF"),
             Path("SIMC.xlsx"),
+            Path("SISCEL_CV_CD4.parquet"),
         ]
         self.source_guide = {
             "AIDSANET": "SINAN", "AIDSCNET": "SINAN", "SICLOM": "SICLOM",
             "DO2020": "SIM", "DO2021": "SIM", "DO2022": "SIM", "DO2023": "SIM",
-            "SIMC": "SIMC",
+            "SIMC": "SIMC", "SISCEL_CV_CD4": "SISCEL"
         }
 
         self.basefolder = Path(source_data_location)
@@ -97,6 +98,8 @@ class InjectorHIV:
                     data_df = Dbf5(self.basefolder.joinpath(current_file), codec='latin').to_dataframe()
                 elif extension==".xlsx":
                     data_df = pd.read_excel(self.basefolder.joinpath(current_file))
+                elif extension==".parquet":
+                    data_df = pd.read_parquet(self.basefolder.joinpath(current_file))
                     #if self.source_guide[source_name]=="SIMC":
                     #    data_df = pd.read_excel(self.basefolder.joinpath(current_file))
                     #else:
@@ -110,6 +113,8 @@ class InjectorHIV:
                 data_df = process_simc(data_df, source_name="SIMC")
             elif self.source_guide[source_name]=="SIM":
                 data_df = process_sim(data_df, source_name=source_name)
+            elif self.source_guide[source_name]=="SISCEL":
+                data_df = process_siscel(data_df, source_name=source_name)
 
             # -- check whether a ID already exists in the db (for now, not necessary)
             #min_year, max_year = data_df["DT_NOTIFIC"].min().year, data_df["DT_NOTIFIC"].max().year
@@ -136,6 +141,8 @@ class InjectorHIV:
                 self.warehouse.insert('sim_info', data_df, batchsize=200, verbose=verbose)
             elif self.source_guide[source_name]=="SIMC":
                 self.warehouse.insert('simc_info', data_df, batchsize=200, verbose=verbose)
+            elif self.source_guide[source_name]=="SISCEL":
+                self.warehouse.insert("siscel_info", data_df, batchsize=200, verbose=verbose)
             print("done.")
 
 

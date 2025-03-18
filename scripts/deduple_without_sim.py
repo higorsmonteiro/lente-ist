@@ -17,7 +17,7 @@ msg2 = "Selecionar Folder do Banco de Dados"
 warehouse_location = Path(select_folder(msg=msg2))
 #warehouse_location = Path.home().joinpath("Documents", "data", "sinan", "aids", "SQL_WAREHOUSE")
 path_to_models = Path.cwd().parent.joinpath("lente_ist", "ml_models")
-warehouse_name = "hiv_aids_paciente.db"
+warehouse_name = "hiv_aids_paciente_18mar25.db"
 
 #engine_url = f"sqlite:///{warehouse_location.joinpath(database_name)}"
 #db_engine = create_engine(engine_url)
